@@ -19,7 +19,7 @@ def main(scr):
     FLAPPYCOLOR =2
 
 
-    curses.init_pair(PIPE_COLOR, curses.COLOR_GREEN , curses.COLOR_BLACK)
+    curses.init_pair(PIPE_COLOR, curses.COLOR_GREEN , curses.COLOR_GREEN)
     curses.init_pair(FLAPPYCOLOR, curses.COLOR_RED , curses.COLOR_BLACK)
 
     gamedifficulty= 200
@@ -67,7 +67,7 @@ def main(scr):
           for y in range(MARGIN +1 , HEIGHT-MARGIN):
             if y not in range (gap_start , gap_start+ GAP_WIDTH ):
                 scr.attron(curses.color_pair(PIPE_COLOR))
-                scr.addstr(y , x, '|')
+                scr.addstr(y , x, '#')
                 scr.attroff(curses.color_pair(PIPE_COLOR))
                 obstructions.add((y,x))
         pipe =[(x-1, gap_start) for x, gap_start in pipe if x > MARGIN]
