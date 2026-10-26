@@ -7,14 +7,14 @@ import random
 
 def main(scr):
     curses.curs_set(0)
-    scr.timeout(150)
+    scr.nodelay(1)
 
 
     HEIGHT, WIDTH= scr.getmaxyx()
     MARGIN= 3
     GAP_WIDTH = 7
     INTER_GAP= 20
-    BIRD='@'
+    BIRD= "@ "
     PIPE_COLOR = 1
     FLAPPYCOLOR =2
 
@@ -34,16 +34,15 @@ def main(scr):
         pipe.append((x, gap_start))
         x +=INTER_GAP
         
-    rectangle(scr, MARGIN, MARGIN ,HEIGHT-MARGIN, WIDTH- MARGIN)
-
-    
     flap_y, flap_x  = HEIGHT//2 , WIDTH//4
     score_text= 'SCORE: {}'
-    score=0
+    score= 0
 
     loop_cntr = 0
 
     while True:
+        scr.erase()
+        rectangle(scr, MARGIN, MARGIN ,HEIGHT-MARGIN, WIDTH- MARGIN) 
 
 
         game_text = score_text.format(score)
@@ -63,12 +62,12 @@ def main(scr):
         obstructions = set()
 
         for x , gap_start in pipe:
-          if flap_x==x:
+          if flap_x == x:
              score += 1
           for y in range(MARGIN +1 , HEIGHT-MARGIN):
             if y not in range (gap_start , gap_start+ GAP_WIDTH ):
                 scr.attron(curses.color_pair(PIPE_COLOR))
-                scr.addstr(y , x, '| ')
+                scr.addstr(y , x, '|')
                 scr.attroff(curses.color_pair(PIPE_COLOR))
                 obstructions.add((y,x))
         pipe =[(x-1, gap_start) for x, gap_start in pipe if x > MARGIN]
@@ -87,12 +86,14 @@ def main(scr):
             (flap_y, flap_x) in obstructions:
             if (flap_y , flap_x) in obstructions:
                score -= 1 
-            game_text= 'GAME OVER'
+            game_text= f'GAME OVER .Score:{score}'
             game_text_y, game_text_x= 1, (WIDTH- len(game_text))//2
-            spaces = ' '*WIDTH
-            scr.addstr(1 , 0 , spaces)
-            scr.addstr(game_text_y, game_text_x , game_text)
+            scr.move(1, 0)
+            scr.clrtoeol()
+
+            scr.addstr(game_text_y, game_text_x, game_text)
             scr.refresh()
+            curses.flushinp()
             scr.timeout(-1)
             scr.getch()
             break
