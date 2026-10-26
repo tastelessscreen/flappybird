@@ -10,53 +10,87 @@ def main(scr):
     scr.timeout(150)
 
 
-    height,width = scr.getmaxyx()
-
+    HEIGHT, WIDTH= scr.getmaxyx()
     MARGIN= 3
     GAP_WIDTH = 7
     INTER_GAP= 20
+    BIRD='@'
+    PIPE_COLOR = 1
+    FLAPPYCOLOR =2
+
+
+    curses.init_pair(PIPE_COLOR, curses.COLOR_GREEN , curses.COLOR_BLACK)
+    curses.init_pair(FLAPPYCOLOR, curses.COLOR_RED , curses.COLOR_BLACK)
+
+    gamedifficulty= 200
+    scr.timeout(gamedifficulty)
+
+    
 
     pipe=[]
-    x =  width//2
-    while x < width-MARGIN:
-        gap_start = random.randint(MARGIN +1 , height- MARGIN -GAP_WIDTH)
+    x =  WIDTH//2
+    while x < WIDTH - MARGIN:
+        gap_start = random.randint(MARGIN +1 , HEIGHT- MARGIN -GAP_WIDTH)
         pipe.append((x, gap_start))
         x +=INTER_GAP
         
-    rectangle(scr, MARGIN, MARGIN ,height-MARGIN, width- MARGIN)
+    rectangle(scr, MARGIN, MARGIN ,HEIGHT-MARGIN, WIDTH- MARGIN)
 
-    flap_bird='@'
-
-    flap_y, flap_x  = height//2 , width//4
+    
+    flap_y, flap_x  = HEIGHT//2 , WIDTH//4
+    score_text= 'SCORE: {}'
+    score=0
 
     loop_cntr = 0
 
     while True:
+
+
+        game_text = score_text.format(score)
+        game_text_y, game_text_x = 1 , (WIDTH  - len(game_text))//2
+        scr.addstr(game_text_y , game_text_x , game_text)
+
+
+   
         if loop_cntr == INTER_GAP:
-           gap_start = random.randint(MARGIN +1 , height- MARGIN -GAP_WIDTH)
+           gap_start = random.randint(MARGIN +1 , HEIGHT- MARGIN -GAP_WIDTH)
            pipe.append((pipe[-1][0] + INTER_GAP, gap_start))
            loop_cntr =0
+           gamedifficulty= max(1, gamedifficulty -5)
+           scr.timeout(gamedifficulty)
 
 
         obstructions = set()
 
         for x , gap_start in pipe:
-          for y in range(MARGIN +1 , height-MARGIN):
+          if flap_x==x:
+             score += 1
+          for y in range(MARGIN +1 , HEIGHT-MARGIN):
             if y not in range (gap_start , gap_start+ GAP_WIDTH ):
+                scr.attron(curses.color_pair(PIPE_COLOR))
                 scr.addstr(y , x, '| ')
+                scr.attroff(curses.color_pair(PIPE_COLOR))
                 obstructions.add((y,x))
         pipe =[(x-1, gap_start) for x, gap_start in pipe if x > MARGIN]
         
                         
 
-       
-        scr.addstr(flap_y , flap_x, flap_bird)
+        scr.attron(curses.color_pair(FLAPPYCOLOR))
+        scr.addstr(flap_y , flap_x, BIRD)
+        scr.attroff(curses.color_pair(FLAPPYCOLOR))
         scr.refresh()
-        key = scr.getch() 
-        if flap_y in [MARGIN, height-MARGIN] or \
+        
+        key = scr.getch()
+
+        
+        if flap_y in [MARGIN, HEIGHT - MARGIN] or \
             (flap_y, flap_x) in obstructions:
+            if (flap_y , flap_x) in obstructions:
+               score -= 1 
             game_text= 'GAME OVER'
-            game_text_y, game_text_x= 1, (width- len(game_text))//2
+            game_text_y, game_text_x= 1, (WIDTH- len(game_text))//2
+            spaces = ' '*WIDTH
+            scr.addstr(1 , 0 , spaces)
             scr.addstr(game_text_y, game_text_x , game_text)
             scr.refresh()
             scr.timeout(-1)
