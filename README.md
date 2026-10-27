@@ -8,6 +8,7 @@
 
 ## To Play Locally
 
+
 Download and extract the latest release, then open a terminal in the folder containing maze.py.
 
 
@@ -23,7 +24,7 @@ Then run
 
 ```powershell
 python flap.py
-```
+```    
 
 # Features:
 
@@ -49,6 +50,10 @@ python flap.py
 ### After losing
 ![image](over.png)
 
+
+## Note:
+The game works a little  slow and wonky. I tried multipele times to fix but i just couldnt figure out plus i didnt have that much time.
+Hope you enjoy playing this game.
 
 
 ## Troubleshooting.
